@@ -287,8 +287,12 @@ public class AddressBook {
             exitProgram();
         }
 
-        storageFilePath = filePath;
+        setStorageFilePath(filePath);
         createFileIfMissing(filePath);
+    }
+
+    private static void setStorageFilePath(String filePath) {
+        storageFilePath = filePath;
     }
 
     /**
@@ -306,7 +310,7 @@ public class AddressBook {
      */
     private static void setupDefaultFileForStorage() {
         showToUser(MESSAGE_USING_DEFAULT_FILE);
-        storageFilePath = DEFAULT_STORAGE_FILEPATH;
+        setStorageFilePath(DEFAULT_STORAGE_FILEPATH);
         createFileIfMissing(storageFilePath);
     }
 
