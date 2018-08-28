@@ -7,21 +7,17 @@ package seedu.addressbook;
  * ====================================================================
  */
 
+import javafx.scene.control.SelectionMode;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /*
  * NOTE : =============================================================
@@ -374,7 +370,7 @@ public class AddressBook {
         case COMMAND_FIND_WORD:
             return executeFindPersons(commandArgs);
         case COMMAND_LIST_WORD:
-            return executeListAllPersonsInAddressBook();
+            return executeListAllPersonsInAddressBook(commandArgs);
         case COMMAND_DELETE_WORD:
             return executeDeletePerson(commandArgs);
         case COMMAND_CLEAR_WORD:
@@ -418,7 +414,6 @@ public class AddressBook {
     private static String executeAddPerson(String commandArgs) {
         // try decoding a person from the raw args
         final Optional<String[]> decodeResult = decodePersonFromString(commandArgs);
-
         // checks if args are valid (decode result will not be present if the person is invalid)
         if (!decodeResult.isPresent()) {
             return getMessageForInvalidCommandInput(COMMAND_ADD_WORD, getUsageInfoForAddCommand());
@@ -450,7 +445,11 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeFindPersons(String commandArgs) {
+       // System.out.println ("this is from executeFindPersons " + commandArgs);
+        //make the cmd upper to ignore case sensitive
+        commandArgs = commandArgs.toUpperCase ();
         final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
+        //System.out.println ("From executeFindPersons "+keywords);
         final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
         showToUser(personsFound);
         return getMessageForPersonsDisplayedSummary(personsFound);
@@ -473,6 +472,7 @@ public class AddressBook {
      * @return set of keywords as specified by args
      */
     private static Set<String> extractKeywordsFromFindPersonArgs(String findPersonCommandArgs) {
+       // System.out.println ("this is from extractKeywordsFromFindPersonArgs " + splitByWhitespace(findPersonCommandArgs.trim()));
         return new HashSet<>(splitByWhitespace(findPersonCommandArgs.trim()));
     }
 
@@ -485,14 +485,40 @@ public class AddressBook {
     private static ArrayList<String[]> getPersonsWithNameContainingAnyKeyword(Collection<String> keywords) {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
-            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
+            Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson_upperCase(person)));
+           // wordsInName = collectionToUpper(wordsInName);
+//            try{
+//                for(String x : wordsInName){
+//                    wordsInName.remove (x);
+//                    x = x.toUpperCase ();
+//                    wordsInName.add (x);
+//                    System.out.println (x);
+//                }
+//            }
+//            catch (Exception e){
+//                System.out.println (e);
+//            }
+//            System.out.println (wordsInName);
             if (!Collections.disjoint(wordsInName, keywords)) {
+
                 matchedPersons.add(person);
             }
         }
+
         return matchedPersons;
     }
-
+//    private static Set<String> collectionToUpper(Set<String>  col){
+//        Set<String> set = new HashSet<> ();
+//        set = col;
+//        for(String element: set){
+//            set.remove (element);
+//////            element = element.toUpperCase ();
+//////            set.add (element);
+////            System.out.println (element);
+//        }
+////        System.out.println (set);
+//        return set;
+//    }
     /**
      * Deletes person identified using last displayed index.
      *
@@ -525,6 +551,7 @@ public class AddressBook {
         } catch (NumberFormatException nfe) {
             return false;
         }
+
     }
 
     /**
@@ -573,11 +600,17 @@ public class AddressBook {
      *
      * @return feedback display message for the operation result
      */
-    private static String executeListAllPersonsInAddressBook() {
+    private static String executeListAllPersonsInAddressBook(String commandArgs) {
+
         ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
-        showToUser(toBeDisplayed);
+        if(commandArgs.equals ("sort")) {
+            showToUser(toBeDisplayed,true);
+        }else {
+            showToUser (toBeDisplayed);
+        }
         return getMessageForPersonsDisplayedSummary(toBeDisplayed);
     }
+
 
     /**
      * Requests to terminate the program.
@@ -623,7 +656,19 @@ public class AddressBook {
             System.out.println(LINE_PREFIX + m);
         }
     }
-
+//    private static void showToUser_sort(String... message) {
+////        for(int i=0;i<message.length;i++){
+////            for(int j=0;j<message.length-i;j++){
+////                if(message[j].compareTo (message[j+1]) <0){
+////                    Array;
+////                }
+////            }
+////        }
+//        Arrays.sort (message);
+//        for (String m : message) {
+//            System.out.println(LINE_PREFIX + m);
+//        }
+//    }
     /**
      * Shows the list of persons to the user.
      * The list will be indexed, starting from 1.
@@ -634,12 +679,22 @@ public class AddressBook {
         showToUser(listAsString);
         updateLatestViewedPersonListing(persons);
     }
+    private static void showToUser(ArrayList<String[]> persons, Boolean needOrder) {
+        if (needOrder == true) {
+            String listAsString = getDisplayString_ordered(persons);
+            showToUser(listAsString);
+            updateLatestViewedPersonListing(persons);
+        }
+
+    }
 
     /**
      * Returns the display string representation of the list of persons.
      */
     private static String getDisplayString(ArrayList<String[]> persons) {
         final StringBuilder messageAccumulator = new StringBuilder();
+
+         //Collections.swap (persons,1,4);
         for (int i = 0; i < persons.size(); i++) {
             final String[] person = persons.get(i);
             final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
@@ -649,6 +704,27 @@ public class AddressBook {
         }
         return messageAccumulator.toString();
     }
+    private static String getDisplayString_ordered(ArrayList<String[]> persons) {
+        final StringBuilder messageAccumulator = new StringBuilder();
+        ArrayList<String[]> ordered = persons;
+        for(int i=0;i<persons.size ();i++){
+            for(int j=0;j<persons.size ()-1;j++){
+                if(ordered.get (j)[0].compareTo (ordered.get (j+1)[0]) <0){
+                    Collections.swap (ordered,j,j+1);
+                }
+            }
+        }
+        //Collections.swap (persons,1,4);
+        for (int i = 0; i < persons.size(); i++) {
+            final String[] person = ordered.get(i);
+            final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
+            messageAccumulator.append('\t')
+                    .append(getIndexedPersonListElementMessage(displayIndex, person))
+                    .append(LS);
+        }
+        return messageAccumulator.toString();
+    }
+
 
     /**
      * Constructs a prettified listing element message to represent a person and their data.
@@ -730,6 +806,7 @@ public class AddressBook {
      */
     private static ArrayList<String[]> loadPersonsFromFile(String filePath) {
         final Optional<ArrayList<String[]>> successfullyDecoded = decodePersonsFromStrings(getLinesInFile(filePath));
+        //System.out.println (successfullyDecoded.get ().get (0)[1]);
         if (!successfullyDecoded.isPresent()) {
             showToUser(MESSAGE_INVALID_STORAGE_FILE_CONTENT);
             exitProgram();
@@ -823,6 +900,7 @@ public class AddressBook {
      */
     private static void initialiseAddressBookModel(ArrayList<String[]> persons) {
         ALL_PERSONS.clear();
+       // System.out.println (persons.get (0)[2]);
         ALL_PERSONS.addAll(persons);
     }
 
@@ -840,6 +918,15 @@ public class AddressBook {
      */
     private static String getNameFromPerson(String[] person) {
         return person[PERSON_DATA_INDEX_NAME];
+    }
+
+    /**
+     *
+     * @param person
+     * @return  upper case to ignore case-sensitive
+     */
+    private static String getNameFromPerson_upperCase(String[] person) {
+        return person[PERSON_DATA_INDEX_NAME].toUpperCase ();
     }
 
     /**
@@ -898,6 +985,7 @@ public class AddressBook {
         for (String[] person : persons) {
             encoded.add(encodePersonToString(person));
         }
+        //ystem.out.println ("From encodePersonsToStrings" + encoded);
         return encoded;
     }
 
@@ -916,6 +1004,7 @@ public class AddressBook {
      *         else: Optional containing decoded person
      */
     private static Optional<String[]> decodePersonFromString(String encoded) {
+      // System.out.println ("this is from decodePersonFromString" + encoded);
         // check that we can extract the parts of a person from the encoded string
         if (!isPersonDataExtractableFrom(encoded)) {
             return Optional.empty();
@@ -925,6 +1014,7 @@ public class AddressBook {
                 extractPhoneFromPersonString(encoded),
                 extractEmailFromPersonString(encoded)
         );
+       // System.out.println ("From decodePersonFromString:" +  decodedPerson[0]);
         // check that the constructed person is valid
         return isPersonDataValid(decodedPerson) ? Optional.of(decodedPerson) : Optional.empty();
     }
@@ -940,10 +1030,12 @@ public class AddressBook {
         final ArrayList<String[]> decodedPersons = new ArrayList<>();
         for (String encodedPerson : encodedPersons) {
             final Optional<String[]> decodedPerson = decodePersonFromString(encodedPerson);
+            //System.out.println (decodedPerson.get()[1]);
             if (!decodedPerson.isPresent()) {
                 return Optional.empty();
             }
             decodedPersons.add(decodedPerson.get());
+           // System.out.println (decodedPersons.get(0)[0]);
         }
         return Optional.of(decodedPersons);
     }
@@ -957,6 +1049,7 @@ public class AddressBook {
     private static boolean isPersonDataExtractableFrom(String personData) {
         final String matchAnyPersonDataPrefix = PERSON_DATA_PREFIX_PHONE + '|' + PERSON_DATA_PREFIX_EMAIL;
         final String[] splitArgs = personData.trim().split(matchAnyPersonDataPrefix);
+        //System.out.println ("From isPersonDataExtractableFrom " + splitArgs[0] );
         return splitArgs.length == 3 // 3 arguments
                 && !splitArgs[0].isEmpty() // non-empty arguments
                 && !splitArgs[1].isEmpty()
@@ -986,6 +1079,7 @@ public class AddressBook {
     private static String extractPhoneFromPersonString(String encoded) {
         final int indexOfPhonePrefix = encoded.indexOf(PERSON_DATA_PREFIX_PHONE);
         final int indexOfEmailPrefix = encoded.indexOf(PERSON_DATA_PREFIX_EMAIL);
+
 
         // phone is last arg, target is from prefix to end of string
         if (indexOfPhonePrefix > indexOfEmailPrefix) {
