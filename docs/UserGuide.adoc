@@ -74,6 +74,7 @@ and persons matching at least one keyword will be returned (i.e. `OR` search).
 ====
 
 Examples:
+find john will find everything in related to john JOHN joHn JOhn ..etc
 
 * `find John` +
 Returns `John Doe` but not `john`
@@ -92,6 +93,7 @@ The index refers to the index numbers shown in the most recent listing.
 ====
 
 Examples:
+list sort command will have a sorted list
 
 * `list` +
 `delete 2` +
