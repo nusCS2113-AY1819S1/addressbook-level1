@@ -53,6 +53,8 @@
   find 23912039120
   # matching should be case-sensitive
   find betsy
+  # same as above, for testing the testing script
+  find betsy
 
   # find unique keyword
   find Betsy
