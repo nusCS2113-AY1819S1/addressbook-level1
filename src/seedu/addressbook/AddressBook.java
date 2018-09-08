@@ -41,7 +41,7 @@ public class AddressBook {
      */
     private static final String DEFAULT_STORAGE_FILEPATH = "addressbook.txt";
 
-    /**
+    /**person[PERSON_DATA_INDEX_EMAIL]
      * Version info of the program.
      */
     private static final String VERSION = "AddessBook Level 1 - Version 1.0";
@@ -870,9 +870,9 @@ public class AddressBook {
      */
     private static String[] makePersonFromData(String name, String phone, String email) {
         final String[] person = new String[PERSON_DATA_COUNT];
-        person[PERSON_DATA_INDEX_NAME] = name;
+        person[PERSON_DATA_INDEX_NAME] = name.toUpperCase();
         person[PERSON_DATA_INDEX_PHONE] = phone;
-        person[PERSON_DATA_INDEX_EMAIL] = email;
+        person[PERSON_DATA_INDEX_EMAIL] = email.toUpperCase();
         return person;
     }
 
