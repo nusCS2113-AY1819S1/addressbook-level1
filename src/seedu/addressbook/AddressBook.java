@@ -7,6 +7,8 @@ package seedu.addressbook;
  * ====================================================================
  */
 
+import jdk.nashorn.api.tree.Tree;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 /*
  * NOTE : =============================================================
@@ -445,10 +449,10 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeFindPersons(String commandArgs) {
-        final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
-        final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
-        showToUser(personsFound);
-        return getMessageForPersonsDisplayedSummary(personsFound);
+            final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
+            final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
+            showToUser(personsFound);
+            return getMessageForPersonsDisplayedSummary(personsFound);
     }
 
     /**
@@ -468,8 +472,7 @@ public class AddressBook {
      * @return set of keywords as specified by args
      */
     private static Set<String> extractKeywordsFromFindPersonArgs(String findPersonCommandArgs) {
-        Pattern searchWord = Pattern.compile(findPersonCommandArgs, Pattern.CASE_INSENSITIVE);
-       return new HashSet<>(splitByWhitespace(findPersonCommandArgs.trim()));
+        return new HashSet<>(splitByWhitespace(findPersonCommandArgs.trim()));
     }
 
     /**
@@ -482,12 +485,21 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            if (equals(wordsInName, keywords)) {
                 matchedPersons.add(person);
             }
         }
         return matchedPersons;
     }
+
+    private static boolean equals(Set<String> wordsInName, Collection<String> keywords){
+        final SortedSet<String> searchArgs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        final SortedSet<String> namesToSearch = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        namesToSearch.addAll(wordsInName);
+        searchArgs.addAll(keywords);
+        return namesToSearch.equals(searchArgs);
+    }
+
 
     /**
      * Deletes person identified using last displayed index.
