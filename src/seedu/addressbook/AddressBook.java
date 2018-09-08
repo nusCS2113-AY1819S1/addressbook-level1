@@ -7,7 +7,6 @@ package seedu.addressbook;
  * ====================================================================
  */
 
-import jdk.nashorn.api.tree.Tree;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,10 +16,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 /*
  * NOTE : =============================================================
