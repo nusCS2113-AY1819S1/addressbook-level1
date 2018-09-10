@@ -7,6 +7,7 @@ package seedu.addressbook;
  * ====================================================================
  */
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,14 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
+
 
 /*
  * NOTE : =============================================================
@@ -450,10 +445,10 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeFindPersons(String commandArgs) {
-        final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
-        final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
-        showToUser(personsFound);
-        return getMessageForPersonsDisplayedSummary(personsFound);
+            final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
+            final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
+            showToUser(personsFound);
+            return getMessageForPersonsDisplayedSummary(personsFound);
     }
 
     /**
@@ -486,12 +481,21 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            if (equals(wordsInName, keywords)) {
                 matchedPersons.add(person);
             }
         }
         return matchedPersons;
     }
+
+    private static boolean equals(Set<String> wordsInName, Collection<String> keywords){
+        final SortedSet<String> searchArgs = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        final SortedSet<String> namesToSearch = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        namesToSearch.addAll(wordsInName);
+        searchArgs.addAll(keywords);
+        return namesToSearch.equals(searchArgs);
+    }
+
 
     /**
      * Deletes person identified using last displayed index.
