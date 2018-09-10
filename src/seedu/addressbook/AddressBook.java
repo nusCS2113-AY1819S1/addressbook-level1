@@ -177,12 +177,8 @@ public class AddressBook {
     /**
      * List of all persons in the address book.
      */
-<<<<<<< HEAD
     private static final ArrayList<HashMap<PersonProperty, String>> ALL_PERSONS = new ArrayList<>();
-=======
-    private static final ArrayList<String[]> ALL_PERSONS = new ArrayList<>();
-    // private static final ArrayList<HashMap<String, String>> ALL_PERSONS = new Arraylist<>();
->>>>>>> 3ebfa5399fee1466819d763a3a4600fd7c095113
+
 
     /**
      * Stores the most recent list of persons shown to the user as a result of a user command.
