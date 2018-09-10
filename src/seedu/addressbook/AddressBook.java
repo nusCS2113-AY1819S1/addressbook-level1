@@ -7,7 +7,6 @@ package seedu.addressbook;
  * ====================================================================
  */
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 
 /*
  * NOTE : =============================================================
@@ -177,6 +175,7 @@ public class AddressBook {
      * List of all persons in the address book.
      */
     private static final ArrayList<String[]> ALL_PERSONS = new ArrayList<>();
+    // private static final ArrayList<HashMap<String, String>> ALL_PERSONS = new Arraylist<>();
 
     /**
      * Stores the most recent list of persons shown to the user as a result of a user command.
